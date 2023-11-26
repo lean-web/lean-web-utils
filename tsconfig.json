@@ -1,0 +1,26 @@
+{
+  "extends": "@tsconfig/svelte/tsconfig.json",
+  "compilerOptions": {
+    "target": "ESNext",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "lib": ["es2019", "es6", "dom", "webworker"],
+    "jsx": "react-jsx",
+    "jsxImportSource": "lean-jsx/lib/jsx",
+    "sourceMap": true,
+    /**
+     * Typecheck JS in `.svelte` and `.js` files by default.
+     * Disable checkJs if you'd like to use dynamic types in JS.
+     * Note that setting allowJs false does not prevent the use
+     * of JS in `.svelte` files.
+     */
+    "allowJs": true,
+    "checkJs": true,
+    "isolatedModules": true,
+    "types": ["node", "jest", "express", "svelte", "lean-jsx-types/lib/global"]
+  },
+  "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.svelte"],
+  "exclude": ["public/worker.js"],
+  "references": [{ "path": "./tsconfig.node.json" }]
+}

@@ -1,2 +1,3 @@
 # lean-web-utils
-Browser-specific utilities for LeanJSX
+
+Utilities for DOM manipulation and web components for LeanJSX.

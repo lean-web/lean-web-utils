@@ -1,0 +1,28 @@
+{
+  "name": "lean-web-utils",
+  "version": "0.0.1",
+  "type": "module",
+  "files": ["lib"],
+  "scripts": {
+    "dev": "vite",
+    "build": "rm -rf ./lib && rollup -c rollup.config.js",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "watch": "rollup -c rollup.config.js -w"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^2.4.2",
+    "@tsconfig/svelte": "^5.0.0",
+    "@types/node": "^20.9.0",
+    "rollup-plugin-analyzer": "^4.0.0",
+    "svelte": "^4.0.5",
+    "svelte-check": "^3.4.6",
+    "tslib": "^2.6.0",
+    "typescript": "^5.0.2",
+    "vite": "^4.4.5",
+    "vite-plugin-dts": "^3.6.3"
+  },
+  "dependencies": {
+    "lean-jsx": "*"
+  }
+}

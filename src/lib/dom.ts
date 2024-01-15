@@ -55,7 +55,7 @@ export function waitForElement(selector: string): Promise<Element> {
   export function addEventListener(
     querySelector: string,
     event: string,
-    handler: () => unknown,
+    handler: (this:Element, ev:Event) => void,
   ) {
     const element = document.querySelector(querySelector);
     if (!element) {

@@ -1,68 +1,101 @@
+import type { WebContext } from "lean-jsx-types/lib/global";
 import { EventHandlerKeys } from "./eventHandlerMap";
-
-export interface WebActions {
-    refetchElement: (
-      id: string,
-      queryParams: Record<string, string | number | boolean>,
-    ) => Promise<boolean | RefetchState>;
-    update: <T extends keyof JSX.IntrinsicElements>(
-      id: string,
-      params: JSX.IntrinsicElements[T],
-    ) => void;
-  }
-
-
-interface WebContext<Data> {
-    data: Data;
-    actions: WebActions;
-}
+import { updateFromString } from "./utils";
 
 export interface EventDetails {
-    id: string;
-    queryParams: Record<string, string | number | boolean>;
-    eventId: string;
+  id: string;
+  queryParams: Record<string, string | number | boolean>;
+  eventId: string;
 }
 
 interface EventReply {
-    success: boolean
+  success: boolean;
 }
 
-type RefetchState = 'TIMEOUT' | 'ERROR' | 'IGNORED'
+type RefetchState = "TIMEOUT" | "ERROR" | "IGNORED";
 
-function timeout<T>(time:number, promise: Promise<T>): Promise<T | RefetchState> {
-    const timeoutPromise: Promise<'TIMEOUT'> = new Promise((resolve) => {
-        setTimeout(() => resolve('TIMEOUT'), time)
-    })
-    return Promise.race([timeoutPromise, promise])
+function timeout<T>(
+  time: number,
+  promise: Promise<T>,
+): Promise<T | RefetchState> {
+  const timeoutPromise: Promise<"TIMEOUT"> = new Promise((resolve) => {
+    setTimeout(() => resolve("TIMEOUT"), time);
+  });
+  return Promise.race([timeoutPromise, promise]);
+}
+
+/**
+ * Create a URL for the given path, relative to the current base domain.
+ * @param path - the relative path
+ * @returns - a fully formed URL to the relative path.
+ */
+function getURL(path: string): URL {
+  return new URL(`${window.location.origin}/${path}`);
+}
+
+/**
+ * Given a function that returns a promise, return a decorated version of that same function which will behave as follows:
+ *
+ * - The first time the decorated function is called, it will call the original function and return a promise.
+ * - Subsequent calls to the decorated function will return an empty promise if they are made before the previous response completes.
+ * - Once the promise is resolved, the decorated call will again call the original function on invocation.
+ *
+ * @param fn the original function
+ * @returns a decorated version that debounces calls.
+ */
+function debouncePromise<P, F extends (...arg: any[]) => Promise<P>, Args>(
+  fn: F,
+) {
+  let loading = false;
+
+  return (...arg: Parameters<typeof fn>): Promise<P | undefined> => {
+    if (loading) {
+      return Promise.resolve(undefined);
+    }
+    loading = true;
+    return fn(...arg).finally(() => (loading = false));
+  };
+}
+
+// create a debounced version of "updateContentWith"
+const updateContentWith_ = debouncePromise(updateContentWith);
+
+export async function replaceWith(
+  replacedId: string,
+  replacementId: string,
+  queryParams: Record<string, string | number | boolean>,
+  options?: {
+    onlyReplaceContent?: boolean;
+    noCache?: boolean;
+  },
+): Promise<boolean | RefetchState> {
+  await updateContentWith_(
+    getURL(`/components/${replacementId}`),
+    `[ref=${replacedId}]`,
+    queryParams,
+    {
+      onlyReplaceContent: options?.onlyReplaceContent ?? false,
+      noCache: options?.noCache,
+    },
+  );
+  return Promise.resolve(true);
 }
 
 export async function refetchElement(
   id: string,
   queryParams: Record<string, string | number | boolean>,
   options?: {
-    timeout: number,
-    ignoreResponse: boolean
-  }
+    timeout: number;
+    ignoreResponse: boolean;
+  },
 ): Promise<boolean | RefetchState> {
-    const eventId = `${new Date().getTime()}`
-  const event = new CustomEvent("refetch", { detail: { id, queryParams, eventId } });
-
-  const response: Promise<boolean> = options?.ignoreResponse ? Promise.resolve(true) : new Promise((resolve, reject) => {
-    // @ts-expect-error: Need to add more custom events to the global types
-    document.addEventListener(eventId, (ev: CustomEvent<EventReply>) => {
-        if (ev.detail.success) {
-            resolve(true);
-        } else {
-            reject(false)
-        }
-    })
-  })
-  document.dispatchEvent(event);
-  return await timeout(options?.timeout ?? 5000, response)
+  const url = getURL(`/components/${id}`);
+  await updateContentWith_(url, `[ref=${id}]`, queryParams);
+  return Promise.resolve(true);
 }
 
-export function replyRefetch(ev: CustomEvent<EventDetails>, success:boolean) {
-    const event = new CustomEvent(ev.detail.eventId, { detail: { success} });
+export function replyRefetch(ev: CustomEvent<EventDetails>, success: boolean) {
+  const event = new CustomEvent(ev.detail.eventId, { detail: { success } });
   document.dispatchEvent(event);
 }
 
@@ -84,7 +117,6 @@ export function update<T extends keyof JSX.IntrinsicElements>(
   );
 }
 
-
 /**
  * Utility that allows component developers to explicitely pass data to the browser
  * for a given event handler (e.g. onclick) in a JSX element.
@@ -94,7 +126,7 @@ export function update<T extends keyof JSX.IntrinsicElements>(
  * @returns a web action handler, used internall by LeanJSX
  *  during render.
  */
-export function webAction<
+export function withClientData<
   Ev extends UIEvent,
   Data extends Record<string, unknown>,
 >(
@@ -112,7 +144,7 @@ export function webAction<
 }
 
 /**
- * Checks if a property tuple is a web handler with data.
+ * Checks if a property tuple is a web handler (with or without data).
  * @param pair [key, value]
  * @returns true if value is a web handler
  */
@@ -125,6 +157,9 @@ export function isWebHandler(
   }
   if (typeof value === "object") {
     return "handler" in value && "data" in value;
+  }
+  if (typeof value === "function") {
+    return true;
   }
   return false;
 }
@@ -142,4 +177,81 @@ export function isPureActionHandler(
 ] {
   const [key, value] = pair;
   return key in EventHandlerKeys && typeof value === "function";
+}
+
+/**
+ *  Given the URL for a component API endpoint (which returns HTML), and an element selector,
+ * fetch the HTML from the URL and update the first element that matches that query selector
+ *
+ * e.g.: updateContentWith("http://localhost:5173/components/product-list", "#product-list");
+ *
+ * @param url
+ * @param elSelector
+ * @returns
+ */
+export async function updateContentWith(
+  url: URL,
+  elSelector: string,
+  queryParams?: Record<string, string | number | boolean>,
+  options?: {
+    onlyReplaceContent: boolean;
+    streamResponse?: boolean;
+    noCache?: boolean;
+  },
+) {
+  const element = document.querySelector(elSelector);
+  if (!element) {
+    console.warn(
+      `Could not find element ${elSelector}, which is expected to be updated`,
+    );
+  }
+  if (queryParams) {
+    Object.entries(queryParams).forEach(([key, value]) => {
+      url.searchParams.append(key, `${value}`);
+    });
+  }
+  const response = await fetch(url, {
+    cache: options?.noCache ? "reload" : "default",
+  });
+  if (!response.body) {
+    return;
+  }
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  const domParser = new DOMParser();
+
+  let html = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    html += value;
+    if (
+      value.includes("<!-- ASYNC -->") &&
+      (options?.streamResponse ?? false)
+    ) {
+      const element = document.querySelector(elSelector);
+
+      if (element) {
+        updateFromString(
+          html,
+          domParser,
+          element,
+          options?.onlyReplaceContent ?? true,
+        );
+      } else {
+        console.warn("Could not find element", element);
+      }
+    }
+  }
+
+  if (element) {
+    updateFromString(
+      html,
+      domParser,
+      element,
+      options?.onlyReplaceContent ?? true,
+    );
+  } else {
+    console.warn("Could not find element", element);
+  }
 }

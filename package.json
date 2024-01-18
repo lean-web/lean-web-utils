@@ -1,6 +1,6 @@
 {
   "name": "lean-web-utils",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "type": "module",
   "files": ["lib"],
   "scripts": {

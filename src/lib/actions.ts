@@ -1,4 +1,3 @@
-import type { WebContext } from "lean-jsx-types/lib/global";
 import { EventHandlerKeys } from "./eventHandlerMap";
 import { updateFromString } from "./utils";
 
@@ -118,32 +117,6 @@ export function update<T extends keyof JSX.IntrinsicElements>(
 }
 
 /**
- * Utility that allows component developers to explicitely pass data to the browser
- * for a given event handler (e.g. onclick) in a JSX element.
- *
- * @param data the data to pass to the browser
- * @param handler the original handler
- * @returns a web action handler, used internall by LeanJSX
- *  during render.
- */
-export function withClientData<
-  Ev extends UIEvent,
-  Data extends Record<string, unknown>,
->(
-  data: Data,
-  handler: (
-    this: Element | null,
-    ev?: Ev,
-    webContext?: WebContext<Data>,
-  ) => unknown,
-): SXL.WebHandler<Ev, Data> {
-  return {
-    handler: handler,
-    data,
-  };
-}
-
-/**
  * Checks if a property tuple is a web handler (with or without data).
  * @param pair [key, value]
  * @returns true if value is a web handler
@@ -254,4 +227,70 @@ export async function updateContentWith(
   } else {
     console.warn("Could not find element", element);
   }
+}
+
+/**
+ *  Given the URL for a component API endpoint (which returns HTML), and an element selector,
+ * fetch the HTML from the URL and update the first element that matches that query selector
+ *
+ * e.g.: updateContentWith("http://localhost:5173/components/product-list", "#product-list");
+ *
+ * @param url
+ * @param elSelector
+ * @returns
+ */
+export async function updateContentWithResponse(
+  replacedId: string,
+  response: Response,
+  options?: { onlyReplaceContent?: boolean },
+) {
+  const element = document.querySelector(`[ref=${replacedId}]`);
+  if (!element) {
+    console.warn(
+      `Could not find component ${replacedId}, which is expected to be updated`,
+    );
+  }
+  if (!response.body) {
+    return;
+  }
+  const reader = response.body.pipeThrough(new TextDecoderStream()).getReader();
+  const domParser = new DOMParser();
+
+  let html = "";
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    html += value;
+    if (
+      value.includes("<!-- ASYNC -->") // &&
+      //   (options?.streamResponse ?? false)
+    ) {
+      if (element) {
+        updateFromString(
+          html,
+          domParser,
+          element,
+          options?.onlyReplaceContent ?? true,
+        );
+      } else {
+        console.warn("Could not find element", element);
+      }
+    }
+  }
+
+  if (element) {
+    updateFromString(
+      html,
+      domParser,
+      element,
+      options?.onlyReplaceContent ?? true,
+    );
+  } else {
+    console.warn("Could not find element", element);
+  }
+}
+
+export function urlForComponent(componentId: string): URL {
+  return getURL(`/components/${componentId}`);
 }

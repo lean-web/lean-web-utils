@@ -1,4 +1,4 @@
-import type { WebContext } from "lean-jsx-types/lib/events";
+import type { WebContext } from "lean-jsx-types/events";
 
 /**
  * Utility that allows component developers to explicitely pass data to the browser

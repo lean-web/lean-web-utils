@@ -18,7 +18,7 @@
     "allowJs": true,
     "checkJs": true,
     "isolatedModules": true,
-    "types": ["node", "jest", "express", "svelte", "lean-jsx-types/lib/global"]
+    "types": ["node", "jest", "express", "svelte", "lean-jsx-types/global"]
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.svelte"],
   "exclude": ["public/worker.js"],

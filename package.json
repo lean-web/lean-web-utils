@@ -1,16 +1,16 @@
 {
   "name": "lean-web-utils",
-  "version": "0.0.6",
+  "version": "0.0.9",
   "type": "module",
   "files": ["lib"],
   "exports": {
-    "./lib/server": {
+    "./server": {
       "import": "./lib/server.js",
       "require": "./lib/server.cjs",
       "node": "./lib/server.cjs",
       "types": "./lib/server.d.ts"
     },
-    "./lib/web": {
+    "./web": {
       "import": "./lib/web.js",
       "require": "./lib/web.cjs",
       "types": "./lib/web.d.ts"

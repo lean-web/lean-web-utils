@@ -7,10 +7,10 @@ import {
   updateContentWithResponse,
   urlForComponent,
 } from "./actions";
-import type { WebActions as IWebActions } from "lean-jsx-types/lib/events";
+import type { WebActions as IWebActions } from "lean-jsx-types/events";
 export { withClientData, withClientContext } from "./with-client-data";
 
-export { isPureActionHandler, isWebHandler };
+export { isPureActionHandler, isWebHandler, update };
 //
 export class WebActions implements IWebActions {
   updateContentWithResponse = updateContentWithResponse;

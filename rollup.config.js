@@ -30,7 +30,7 @@ const iifeInput = {
  * External dependencies:
  */
 const external = [
-  "lean-jsx/lib/web/sxl.js",
+  "lean-jsx/web/sxl.js",
   "body-parser",
   "pino",
   "raw-body",
@@ -60,13 +60,15 @@ export default [
     output: {
       dir: "lib",
       format: "cjs",
-      entryFileNames: "[name].js",
+      entryFileNames: "[name].cjs",
+      chunkFileNames: "includes/[hash].cjs",
+
       sourcemap: true,
     },
     plugins: [
       typescript(tsConfig),
       nodeResolve({ preferBuiltins: true }),
-      commonjs(),
+      //   commonjs(),
       json(),
       aliasConfig,
       analyze(),
@@ -78,7 +80,8 @@ export default [
     output: {
       dir: "lib",
       format: "es",
-      entryFileNames: "[name].mjs",
+      entryFileNames: "[name].js",
+      chunkFileNames: "includes/[hash].js",
       sourcemap: true,
     },
     plugins: [
@@ -108,7 +111,8 @@ export default [
     output: {
       dir: "lib",
       format: "iife",
-      entryFileNames: "[name].js",
+      entryFileNames: "[name].iife.js",
+      chunkFileNames: "includes/[hash].iife.js",
       name: "sxl",
       sourcemap: true,
     },

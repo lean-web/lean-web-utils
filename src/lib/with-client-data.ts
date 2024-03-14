@@ -12,7 +12,7 @@ import type { WebContext } from "lean-jsx-types/lib/events";
  *  during render.
  */
 export function withClientData<
-  Ev extends UIEvent,
+  Ev extends Event,
   Data extends Record<string, unknown>,
 >(
   data: Data,
@@ -37,7 +37,7 @@ export function withClientData<
  * @returns a web action handler, used internall by LeanJSX
  *  during render.
  */
-export function withClientContext<Ev extends UIEvent>(
+export function withClientContext<Ev extends Event>(
   handler: (
     this: Element | null,
     ev: Ev,

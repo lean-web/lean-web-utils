@@ -7,7 +7,7 @@
     "resolveJsonModule": true,
     "lib": ["es2019", "es6", "dom", "webworker"],
     "jsx": "react-jsx",
-    "jsxImportSource": "lean-jsx/lib/jsx",
+    "jsxImportSource": "lean-jsx/jsx",
     "sourceMap": true,
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.

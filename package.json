@@ -1,19 +1,34 @@
 {
   "name": "lean-web-utils",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "type": "module",
   "files": ["lib"],
+  "exports": {
+    "./lib/server": {
+      "import": "./lib/server.js",
+      "require": "./lib/server.cjs",
+      "node": "./lib/server.cjs",
+      "types": "./lib/server.d.ts"
+    },
+    "./lib/web": {
+      "import": "./lib/web.js",
+      "require": "./lib/web.cjs",
+      "types": "./lib/web.d.ts"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "rm -rf ./lib && rollup -c rollup.config.js",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "watch": "rollup -c rollup.config.js -w"
+    "watch": "npm run prebuild && rollup -c rollup.config.js -w",
+    "prebuild": "rimraf lib"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "@tsconfig/svelte": "^5.0.0",
     "@types/node": "^20.9.0",
+    "rimraf": "^5.0.5",
     "rollup-plugin-analyzer": "^4.0.0",
     "svelte": "^4.0.5",
     "svelte-check": "^3.4.6",

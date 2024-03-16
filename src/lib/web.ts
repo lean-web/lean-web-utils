@@ -1,7 +1,7 @@
 import type { SvelteComponent } from "svelte";
 export { DynamicComponent } from "./dynamic-component";
 export { waitForElement, addEventListener } from "./dom";
-export { refetchElement } from "./actions";
+export { refetchAPIC as refetchAPIC } from "./actions";
 
 interface CustomEventMap {
   lean: CustomEvent<

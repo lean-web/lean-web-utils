@@ -59,7 +59,16 @@ function debouncePromise<P, F extends (...arg: any[]) => Promise<P>, Args>(
 // create a debounced version of "updateContentWith"
 const updateContentWith_ = debouncePromise(updateContentWith);
 
-export async function replaceWith(
+/**
+ * Replace a given API component with another.
+ *
+ * @param replacedId the ID for the component to replace.
+ * @param replacementId the ID for the component to use as a replacement.
+ * @param queryParams The query parameters used in the call for the "replacementId" component.
+ * @param options Request options
+ * @returns
+ */
+export async function replaceAPIC(
   replacedId: string,
   replacementId: string,
   queryParams: Record<string, string | number | boolean>,
@@ -80,7 +89,14 @@ export async function replaceWith(
   return Promise.resolve(true);
 }
 
-export async function refetchElement(
+/**
+ * Reload an API component.
+ * @param id the ID of the component to reload
+ * @param queryParams the query parameters to use in the request to fetch the component contents.
+ * @param options options for the request
+ * @returns
+ */
+export async function refetchAPIC(
   id: string,
   queryParams: Record<string, string | number | boolean>,
   options?: {

@@ -1,21 +1,20 @@
 import {
-  refetchElement,
+  refetchAPIC,
   update,
-  replaceWith,
+  replaceAPIC,
   isPureActionHandler,
   isWebHandler,
   updateContentWithResponse,
   urlForComponent,
 } from "./actions";
 import type { WebActions as IWebActions } from "lean-jsx-types/events";
-export { withClientData, withClientContext } from "./with-client-data";
+export { withClientData } from "./with-client-data";
+export { refetchAPIC, updateContentWithResponse, replaceAPIC, urlForComponent };
 
 export { isPureActionHandler, isWebHandler, update };
-//
+
 export class WebActions implements IWebActions {
-  updateContentWithResponse = updateContentWithResponse;
-  refetchElement = refetchElement;
-  update = update;
-  replaceWith = replaceWith;
+  refetchAPIC = refetchAPIC;
+  replaceAPIC = replaceAPIC;
   urlForComponent = urlForComponent;
 }

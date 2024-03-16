@@ -1,4 +1,4 @@
-import type { WebContext } from "lean-jsx-types/events";
+import type { WebActions } from "lean-jsx-types/events";
 
 /**
  * Utility that allows component developers to explicitely pass data to the browser
@@ -7,7 +7,8 @@ import type { WebContext } from "lean-jsx-types/events";
  * @param data the data to pass to the browser
  * @param handler - a function that receives two parameters (on the client side):
  * - The Event object from the listener.
- * - A context object with access to the server-passed data and LeanJSX client utilities.
+ * - An object containing API-components actions
+ * - A context object with access to the server-passed data.
  * @returns a web action handler, used internall by LeanJSX
  *  during render.
  */
@@ -19,33 +20,12 @@ export function withClientData<
   handler: (
     this: Element | null,
     ev: Ev,
-    webContext: WebContext<Data>,
+    actions: WebActions,
+    data: Data,
   ) => unknown,
 ): SXL.WebHandler<Ev, Data> {
   return {
     handler: handler,
     data,
-  };
-}
-
-/**
- * Utility that allows using the client-context-defined utilities.
- * Like `withClientData`, but for cases where no data is passed from the server to the client.
- * @param handler - a function that receives two parameters (on the client side):
- * - The Event object from the listener.
- * - A context object with access to LeanJSX client utilities.
- * @returns a web action handler, used internall by LeanJSX
- *  during render.
- */
-export function withClientContext<Ev extends Event>(
-  handler: (
-    this: Element | null,
-    ev: Ev,
-    webContext: WebContext<object>,
-  ) => unknown,
-): SXL.WebHandler<Ev, object> {
-  return {
-    handler: handler,
-    data: {},
   };
 }

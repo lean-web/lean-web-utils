@@ -4,6 +4,12 @@
   "type": "module",
   "files": ["lib"],
   "exports": {
+    "./server.iife.js": {
+      "import": "./lib/server.iife.js",
+      "require": "./lib/server.iife.js",
+      "node": "./lib/server.iife.js"
+    },
+    "./web.iife.js": "./lib/web.iife.js",
     "./server": {
       "import": "./lib/server.js",
       "require": "./lib/server.cjs",

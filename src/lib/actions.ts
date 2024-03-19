@@ -1,5 +1,17 @@
 import { EventHandlerKeys } from "./eventHandlerMap";
 import { updateFromString } from "./utils";
+import type { APICRequest } from "lean-jsx-types/events";
+
+class APICActionError extends Error {
+  cause: unknown;
+  constructor(message: string, error: unknown) {
+    super(message);
+    this.name = this.constructor.name;
+    if (!error) throw new Error("APICActionError requires a message and error");
+    this.cause = error;
+    this.message = message;
+  }
+}
 
 export interface EventDetails {
   id: string;
@@ -72,19 +84,13 @@ export async function replaceAPIC(
   replacedId: string,
   replacementId: string,
   queryParams: Record<string, string | number | boolean>,
-  options?: {
-    onlyReplaceContent?: boolean;
-    noCache?: boolean;
-  },
+  options?: APICRequest,
 ): Promise<boolean | RefetchState> {
   await updateContentWith_(
-    getURL(`/components/${replacementId}`),
+    urlForComponent(replacementId),
     `[ref=${replacedId}]`,
     queryParams,
-    {
-      onlyReplaceContent: options?.onlyReplaceContent ?? false,
-      noCache: options?.noCache,
-    },
+    options,
   );
   return Promise.resolve(true);
 }
@@ -99,13 +105,10 @@ export async function replaceAPIC(
 export async function refetchAPIC(
   id: string,
   queryParams: Record<string, string | number | boolean>,
-  options?: {
-    timeout: number;
-    ignoreResponse: boolean;
-  },
+  options?: APICRequest,
 ): Promise<boolean | RefetchState> {
-  const url = getURL(`/components/${id}`);
-  await updateContentWith_(url, `[ref=${id}]`, queryParams);
+  const url = urlForComponent(id);
+  await updateContentWith_(url, `[ref=${id}]`, queryParams, options);
   return Promise.resolve(true);
 }
 
@@ -176,31 +179,33 @@ export function isPureActionHandler(
  *
  * @param url
  * @param elSelector
- * @returns
+ * @returns an empty promise that completes when the update is complete
  */
 export async function updateContentWith(
   url: URL,
   elSelector: string,
   queryParams?: Record<string, string | number | boolean>,
-  options?: {
-    onlyReplaceContent: boolean;
-    streamResponse?: boolean;
-    noCache?: boolean;
-  },
-) {
+  options?: APICRequest,
+): Promise<void> {
   const element = document.querySelector(elSelector);
   if (!element) {
     console.warn(
       `Could not find element ${elSelector}, which is expected to be updated`,
     );
   }
+  const { onlyReplaceContent, streamResponse, noCache, ...fetchOptions } =
+    options ?? {
+      onlyReplaceContent: true,
+      streamResponse: false,
+    };
   if (queryParams) {
     Object.entries(queryParams).forEach(([key, value]) => {
       url.searchParams.append(key, `${value}`);
     });
   }
   const response = await fetch(url, {
-    cache: options?.noCache ? "reload" : "default",
+    cache: fetchOptions.cache ?? noCache ? "reload" : "default",
+    ...fetchOptions,
   });
   if (!response.body) {
     return;
@@ -211,25 +216,26 @@ export async function updateContentWith(
   let html = "";
 
   while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    html += value;
-    if (
-      value.includes("<!-- ASYNC -->") &&
-      (options?.streamResponse ?? false)
-    ) {
-      const element = document.querySelector(elSelector);
+    try {
+      const { value, done } = await reader.read();
+      if (done) break;
+      html += value;
+      if (value.includes("<!-- ASYNC -->") && streamResponse) {
+        const element = document.querySelector(elSelector);
 
-      if (element) {
-        updateFromString(
-          html,
-          domParser,
-          element,
-          options?.onlyReplaceContent ?? true,
-        );
-      } else {
-        console.warn("Could not find element", element);
+        if (element) {
+          updateFromString(
+            html,
+            domParser,
+            element,
+            onlyReplaceContent ?? true,
+          );
+        } else {
+          console.warn("Could not find element", element);
+        }
       }
+    } catch (err) {
+      throw new APICActionError("Failed to update AIC", err);
     }
   }
 
@@ -246,6 +252,15 @@ export async function updateContentWith(
 }
 
 /**
+ * Given an API Component ID, get the DOM element where it was rendered, if exists.
+ * @param id string
+ * @returns the API Component element
+ */
+export function getElementByAPICId(id: string): Element | null {
+  return document.querySelector(`[ref=${id}]`);
+}
+
+/**
  *  Given the URL for a component API endpoint (which returns HTML), and an element selector,
  * fetch the HTML from the URL and update the first element that matches that query selector
  *
@@ -253,13 +268,13 @@ export async function updateContentWith(
  *
  * @param url
  * @param elSelector
- * @returns
+ * @returns an empty promise that completes once the update is finished
  */
 export async function updateContentWithResponse(
   replacedId: string,
   response: Response,
-  options?: { onlyReplaceContent?: boolean },
-) {
+  options?: APICRequest,
+): Promise<void> {
   const element = document.querySelector(`[ref=${replacedId}]`);
   if (!element) {
     console.warn(
@@ -275,23 +290,27 @@ export async function updateContentWithResponse(
   let html = "";
 
   while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    html += value;
-    if (
-      value.includes("<!-- ASYNC -->") // &&
-      //   (options?.streamResponse ?? false)
-    ) {
-      if (element) {
-        updateFromString(
-          html,
-          domParser,
-          element,
-          options?.onlyReplaceContent ?? true,
-        );
-      } else {
-        console.warn("Could not find element", element);
+    try {
+      const { value, done } = await reader.read();
+      if (done) break;
+      html += value;
+      if (
+        value.includes("<!-- ASYNC -->") // &&
+        //   (options?.streamResponse ?? false)
+      ) {
+        if (element) {
+          updateFromString(
+            html,
+            domParser,
+            element,
+            options?.onlyReplaceContent ?? true,
+          );
+        } else {
+          console.warn("Could not find element", element);
+        }
       }
+    } catch (err) {
+      throw new APICActionError("Failed to update AIC", err);
     }
   }
 

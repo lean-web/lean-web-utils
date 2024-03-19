@@ -18,7 +18,7 @@ export function withClientData<
 >(
   data: Data,
   handler: (
-    this: Element | null,
+    this: Element | GlobalEventHandlers | null,
     ev: Ev,
     actions: WebActions,
     data: Data,

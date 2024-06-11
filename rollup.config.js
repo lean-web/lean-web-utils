@@ -31,6 +31,7 @@ const iifeInput = {
  */
 const external = [
   "lean-jsx/web/sxl.js",
+  "lean-jsx-types/events",
   "body-parser",
   "pino",
   "raw-body",

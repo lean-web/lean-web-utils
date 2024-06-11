@@ -3,6 +3,7 @@ module.exports = {
   displayName: "lean-web-utils",
   preset: "ts-jest",
   extensionsToTreatAsEsm: [".ts", ".tsx"],
+  testEnvironment: "@bufbuild/jest-environment-jsdom",
   moduleNameMapper: {
     "^@tests/(.*)$": "<rootDir>/tests/$1",
     "^@/(.*)$": "<rootDir>/src/$1",

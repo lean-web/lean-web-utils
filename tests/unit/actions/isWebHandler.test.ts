@@ -1,7 +1,7 @@
 import { describe, expect, test } from "@jest/globals";
-import { isWebHandler } from "../../src/lib/actions";
+import { isWebHandler } from "../../../src/lib/actions";
 import type { WebActions } from "lean-jsx-types/events";
-import { withClientData } from "../../src/lib/with-client-data";
+import { withClientData } from "../../../src/lib/with-client-data";
 
 describe("Test action utilities", () => {
   test("isWebHandler", () => {

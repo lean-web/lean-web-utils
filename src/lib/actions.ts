@@ -141,10 +141,10 @@ export function update<T extends keyof JSX.IntrinsicElements>(
  * @returns true if value is a web handler
  */
 export function isWebHandler(
-  pair: [key: string, value: unknown],
+  pair: [key: string, value: SXL.Props<object>[keyof SXL.Props<object>]],
 ): pair is [string, SXL.WebHandler<Event, Record<string, unknown>>] {
   const [key, value] = pair;
-  if (!value || !key || !(key in EventHandlerKeys)) {
+  if (value === null) {
     return false;
   }
   if (typeof value === "object") {
@@ -203,7 +203,7 @@ export async function updateContentWith(
       url.searchParams.append(key, `${value}`);
     });
   }
-  const response = await fetch(url, {
+  const response = await fetch(url.toString(), {
     cache: fetchOptions.cache ?? noCache ? "reload" : "default",
     ...fetchOptions,
   });
@@ -327,5 +327,5 @@ export async function updateContentWithResponse(
 }
 
 export function urlForComponent(componentId: string): URL {
-  return getURL(`/components/${componentId}`);
+  return getURL(`components/${componentId}`);
 }

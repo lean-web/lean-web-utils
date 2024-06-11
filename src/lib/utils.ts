@@ -22,6 +22,12 @@ export function updateFromString(
   onlyReplaceContent: boolean,
 ) {
   const responseDOM = domParser.parseFromString(data, "text/html");
+
+  // TODO: validate data to be valid HTML
+  const errorNode = responseDOM.querySelector("parsererror");
+  if (errorNode) {
+    throw errorNode;
+  }
   const fragment = responseDOM.createDocumentFragment();
 
   Array.from(responseDOM.body.childNodes).forEach((child) => {

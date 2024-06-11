@@ -27,19 +27,21 @@
     "build": "rm -rf ./lib && rollup -c rollup.config.js",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json",
-    "watch": "npm run prebuild && rollup -c rollup.config.js -w",
-    "prebuild": "rimraf lib"
+    "watch": "rollup -c rollup.config.js -w",
+    "prebuild": "rimraf lib",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@bufbuild/jest-environment-jsdom": "^0.1.1",
     "@sveltejs/vite-plugin-svelte": "^2.4.2",
     "@tsconfig/svelte": "^5.0.0",
     "@types/node": "^20.9.0",
     "rimraf": "^5.0.5",
     "rollup-plugin-analyzer": "^4.0.0",
+    "semantic-release": "^23.0.5",
     "svelte": "^4.0.5",
     "svelte-check": "^3.4.6",
     "tslib": "^2.6.0",
-    "semantic-release": "^23.0.5",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vite-plugin-dts": "^3.6.3"

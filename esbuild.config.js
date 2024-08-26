@@ -42,22 +42,12 @@ async function main() {
     {
       filePath: "src/lib/web.ts",
       output: "lib/web.d.ts",
-      allowedTypesLibraries: [
-        "node",
-        "jest",
-        "express",
-        "lean-jsx-types/global",
-      ],
+      allowedTypesLibraries: ["node", "jest", "lean-jsx-types/global"],
     },
     {
       filePath: "src/lib/server.ts",
       output: "lib/server.d.ts",
-      allowedTypesLibraries: [
-        "node",
-        "jest",
-        "express",
-        "lean-jsx-types/global",
-      ],
+      allowedTypesLibraries: ["node", "jest", "lean-jsx-types/global"],
     },
   ];
   const bundle = dtsBundler.generateDtsBundle(dtsconfig, {

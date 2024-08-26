@@ -13,7 +13,7 @@
     "checkJs": true,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "types": ["node", "jest", "express", "lean-jsx-types/global"],
+    "types": ["node", "jest", "lean-jsx-types/global"],
   },
   "include": ["src/**/*.d.ts", "src/**/*.tsx", "src/**/*.js",  "tests"],
   "exclude": ["public/worker.js"]

@@ -99,4 +99,5 @@ export const EventHandlerKeys: EventHandlerMap = {
   onwheel: true,
   addEventListener: true,
   removeEventListener: true,
+  onbeforetoggle: true,
 };

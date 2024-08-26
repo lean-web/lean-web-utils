@@ -8,7 +8,7 @@ import {
   getElementByAPICId,
   urlForComponent,
 } from "./actions";
-import type { WebActions as IWebActions } from "lean-jsx-types/events";
+import type { IWebActions } from "lean-jsx-types/events";
 export { withClientData } from "./with-client-data";
 
 export { isPureActionHandler, isWebHandler, update };

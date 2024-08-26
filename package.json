@@ -4,49 +4,46 @@
   "type": "module",
   "files": ["lib"],
   "exports": {
-    "./server.iife.js": {
-      "import": "./lib/server.iife.js",
-      "require": "./lib/server.iife.js",
-      "node": "./lib/server.iife.js"
-    },
-    "./web.iife.js": "./lib/web.iife.js",
     "./server": {
-      "import": "./lib/server.js",
-      "require": "./lib/server.cjs",
       "node": "./lib/server.cjs",
-      "types": "./lib/server.d.ts"
+      "types": "./lib/server.d.ts",
+      "import": "./lib/server.js",
+      "require": "./lib/server.cjs"
     },
     "./web": {
+      "types": "./lib/web.d.ts",
       "import": "./lib/web.js",
-      "require": "./lib/web.cjs",
-      "types": "./lib/web.d.ts"
+      "require": "./lib/web.cjs"
     }
   },
+  "dependencies": {
+    "lean-jsx-types": "*"
+  },
+  "peerDependencies": {
+    "lean-jsx-types": "^1.0.x"
+  },
+  "overrides": {
+    "@types/react": "../_EXCLUDED_"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "rm -rf ./lib && rollup -c rollup.config.js",
-    "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json",
-    "watch": "rollup -c rollup.config.js -w",
+    "build": "rm -rf ./lib && node esbuild.config.js",
     "prebuild": "rimraf lib",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "buildtypes": "tsc --declaration --declarationDir . --outDir lib src/lib/web.ts --skipLibCheck true --types node,jest,express,lean-jsx-types/global"
   },
   "devDependencies": {
     "@bufbuild/jest-environment-jsdom": "^0.1.1",
-    "@sveltejs/vite-plugin-svelte": "^2.4.2",
-    "@tsconfig/svelte": "^5.0.0",
     "@types/node": "^20.9.0",
+    "dts-bundle-generator": "^9.5.1",
+    "esbuild": "^0.23.1",
     "rimraf": "^5.0.5",
-    "rollup-plugin-analyzer": "^4.0.0",
     "semantic-release": "^23.0.5",
-    "svelte": "^4.0.5",
-    "svelte-check": "^3.4.6",
     "tslib": "^2.6.0",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
-    "vite-plugin-dts": "^3.6.3"
+    "vite-plugin-dts": "^4.0.3"
   },
   "release": {
-    "branches": ["master"]
+    "branches": ["main"]
   }
 }

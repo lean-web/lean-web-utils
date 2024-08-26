@@ -1,4 +1,4 @@
-import type { WebActions } from "lean-jsx-types/events";
+import type { IWebActions } from "lean-jsx-types/events";
 
 /**
  * Utility that allows component developers to explicitely pass data to the browser
@@ -20,7 +20,7 @@ export function withClientData<
   handler: (
     this: Element | GlobalEventHandlers | null,
     ev: Ev,
-    actions: WebActions,
+    actions: IWebActions,
     data: Data,
   ) => unknown,
 ): SXL.WebHandler<Ev, Data> {

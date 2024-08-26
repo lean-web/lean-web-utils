@@ -1,4 +1,5 @@
 import { replyRefetch, type EventDetails } from "./actions";
+import type { LeanJSXDocument } from "./web";
 
 export interface DynamicDataComponent extends Partial<HTMLElement> {
   "data-id": string;

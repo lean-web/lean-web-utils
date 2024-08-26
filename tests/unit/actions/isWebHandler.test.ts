@@ -1,6 +1,6 @@
 import { describe, expect, test } from "@jest/globals";
 import { isWebHandler } from "../../../src/lib/actions";
-import type { WebActions } from "lean-jsx-types/events";
+import type { IWebActions } from "lean-jsx-types/events";
 import { withClientData } from "../../../src/lib/with-client-data";
 
 describe("Test action utilities", () => {
@@ -8,7 +8,7 @@ describe("Test action utilities", () => {
     expect(isWebHandler(["style", ""])).toBeFalsy();
     expect(isWebHandler(["onclick", ""])).toBeFalsy();
     expect(
-      isWebHandler(["onclick", (_ev: Event, _actions: WebActions) => {}]),
+      isWebHandler(["onclick", (_ev: Event, _actions: IWebActions) => {}]),
     ).toBeTruthy();
     expect(isWebHandler(["onclick", (_ev: Event) => {}])).toBeTruthy();
     expect(
@@ -16,7 +16,7 @@ describe("Test action utilities", () => {
         "onclick",
         withClientData(
           { id: "" },
-          (_ev: Event, _actions: WebActions, _data: { id: string }) => {},
+          (_ev: Event, _actions: IWebActions, _data: { id: string }) => {},
         ),
       ]),
     ).toBeTruthy();

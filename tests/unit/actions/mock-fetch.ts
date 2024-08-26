@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { TextDecoderStream, ReadableStream } from "stream/web";
 
@@ -40,7 +41,7 @@ function buildHeaders(): Response["headers"] {
     ): void {
       throw new Error("Function not implemented.");
     },
-  };
+  } as Response["headers"];
 }
 
 function buildResponse(responseHTML: string): Response {

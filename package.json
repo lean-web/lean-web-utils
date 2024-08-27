@@ -1,55 +1,56 @@
 {
-  "name": "lean-web-utils",
-  "version": "0.0.11",
-  "type": "module",
-  "files": [
-    "lib"
-  ],
-  "exports": {
-    "./server": {
-      "node": "./lib/server.cjs",
-      "types": "./lib/server.d.ts",
-      "import": "./lib/server.js",
-      "require": "./lib/server.cjs"
+    "name": "lean-web-utils",
+    "version": "0.0.11",
+    "type": "module",
+    "files": ["lib"],
+    "exports": {
+        "./server": {
+            "node": "./lib/server.cjs",
+            "types": "./lib/server.d.ts",
+            "import": "./lib/server.js",
+            "require": "./lib/server.cjs"
+        },
+        "./web": {
+            "types": "./lib/web.d.ts",
+            "import": "./lib/web.js",
+            "require": "./lib/web.cjs"
+        },
+        "./clientRender": {
+            "types": "./lib/clientRender.d.ts",
+            "import": "./lib/clientRender.js"
+        }
     },
-    "./web": {
-      "types": "./lib/web.d.ts",
-      "import": "./lib/web.js",
-      "require": "./lib/web.cjs"
+    "dependencies": {
+        "lean-jsx-types": "^1.0.x"
+    },
+    "peerDependencies": {
+        "lean-jsx-types": "^1.0.x"
+    },
+    "overrides": {
+        "@types/react": "../_EXCLUDED_"
+    },
+    "scripts": {
+        "build": "rm -rf ./lib && node esbuild.config.js",
+        "prebuild": "rimraf lib",
+        "typecheck": "tsc --noEmit",
+        "semver-check": "npx node-env-run --exec \"semantic-release --dry-run --ci false\"",
+        "buildtypes": "tsc --declaration --declarationDir . --outDir lib src/lib/web.ts --skipLibCheck true --types node,jest,express,lean-jsx-types/global"
+    },
+    "devDependencies": {
+        "@bufbuild/jest-environment-jsdom": "^0.1.1",
+        "@types/node": "^20.9.0",
+        "dts-bundle-generator": "^9.5.1",
+        "esbuild": "^0.23.1",
+        "jest": "^29.7.0",
+        "rimraf": "^5.0.5",
+        "semantic-release": "^23.0.5",
+        "ts-jest": "^29.2.5",
+        "tslib": "^2.6.0",
+        "typescript": "^5.0.2",
+        "vite": "^4.4.5",
+        "vite-plugin-dts": "^4.0.3"
+    },
+    "release": {
+        "branches": ["main"]
     }
-  },
-  "dependencies": {
-    "lean-jsx-types": "^1.0.x"
-  },
-  "peerDependencies": {
-    "lean-jsx-types": "^1.0.x"
-  },
-  "overrides": {
-    "@types/react": "../_EXCLUDED_"
-  },
-  "scripts": {
-    "build": "rm -rf ./lib && node esbuild.config.js",
-    "prebuild": "rimraf lib",
-    "typecheck": "tsc --noEmit",
-    "buildtypes": "tsc --declaration --declarationDir . --outDir lib src/lib/web.ts --skipLibCheck true --types node,jest,express,lean-jsx-types/global"
-  },
-  "devDependencies": {
-    "@bufbuild/jest-environment-jsdom": "^0.1.1",
-    "@types/node": "^20.9.0",
-    "dts-bundle-generator": "^9.5.1",
-    "esbuild": "^0.23.1",
-    "jest": "^29.7.0",
-    "rimraf": "^5.0.5",
-    "semantic-release": "^23.0.5",
-    "ts-jest": "^29.2.5",
-    "tslib": "^2.6.0",
-    "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "vite-plugin-dts": "^4.0.3"
-  },
-  "release": {
-    "branches": [
-      "main"
-    ]
-  }
 }
